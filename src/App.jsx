@@ -4,7 +4,6 @@ import Register from './components/Register';
 import Login from './components/Login';
 import { contractABI, contractAddress } from './abi';
 import './App.css'; // Custom CSS for styling
-import './index.css';
 
 const App = () => {
   const [account, setAccount] = useState('');
