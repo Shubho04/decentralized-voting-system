@@ -1,7 +1,7 @@
 import express from 'express';
-const router = express.Router();
-
 import { registerUser, loginUser } from '../controllers/userController.mjs'; // Importing controllers
+
+const router = express.Router();
 
 // Routes
 router.post('/register', registerUser);

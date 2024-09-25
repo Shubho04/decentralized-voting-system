@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import userRoutes from './routes/userRoutes.mjs';
 
 dotenv.config(); // Load environment variables
 
@@ -27,7 +28,6 @@ const connectDB = async () => {
 connectDB();
 
 // Routes (example)
-import userRoutes from './routes/userRoutes.mjs';  // Example route file
 app.use('/api/users', userRoutes);
 
 // Start server
