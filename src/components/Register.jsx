@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 
 const Register = () => {
-    const [aadhaar, setAadhaar] = useState('');
+    const [aadhaarNumber, setAadhaarNumber] = useState(''); // Updated state variable name
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
 
@@ -10,12 +10,12 @@ const Register = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:5000/api/users/register', {
-                aadhaar,
+                aadhaarNumber, // Updated key name here
                 password
             });
             setMessage(response.data.message);
         } catch (error) {
-            setMessage(error.response.data.message);
+            setMessage(error.response.data.message || 'Registration failed'); // Fallback message
         }
     };
 
@@ -26,8 +26,8 @@ const Register = () => {
                 <input
                     type="text"
                     placeholder="Aadhaar Number"
-                    value={aadhaar}
-                    onChange={(e) => setAadhaar(e.target.value)}
+                    value={aadhaarNumber} // Updated value here
+                    onChange={(e) => setAadhaarNumber(e.target.value)} // Updated setter function
                     required
                 />
                 <input

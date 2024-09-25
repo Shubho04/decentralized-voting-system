@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 
 const Login = () => {
-    const [aadhaar, setAadhaar] = useState('');
+    const [aadhaarNumber, setAadhaarNumber] = useState(''); // Updated state variable name
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
 
@@ -10,13 +10,18 @@ const Login = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:5000/api/users/login', {
-                aadhaar,
+                aadhaarNumber, // Use aadhaarNumber here
                 password
             });
-            setMessage('Login successful!');
-            localStorage.setItem('token', response.data.token); // Store token for further requests
+
+            // Use the response object
+            if (response.data && response.data.message) {
+                setMessage(response.data.message);
+                // Store token if present in response
+                // localStorage.setItem('token', response.data.token); // Uncomment if using token
+            }
         } catch (error) {
-            setMessage(error.response.data.message);
+            setMessage(error.response?.data.message || 'Login failed'); // Use optional chaining to avoid errors
         }
     };
 
@@ -27,8 +32,8 @@ const Login = () => {
                 <input
                     type="text"
                     placeholder="Aadhaar Number"
-                    value={aadhaar}
-                    onChange={(e) => setAadhaar(e.target.value)}
+                    value={aadhaarNumber} // Updated value here
+                    onChange={(e) => setAadhaarNumber(e.target.value)} // Updated setter function
                     required
                 />
                 <input
