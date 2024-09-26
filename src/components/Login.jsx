@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types'; // Import PropTypes for validation
 
-const Login = () => {
-    const [aadhaarNumber, setAadhaarNumber] = useState(''); // Updated state variable name
+const Login = ({ setLoggedIn, setView }) => {
+    const [aadhaarNumber, setAadhaarNumber] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
 
@@ -10,18 +11,24 @@ const Login = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:5000/api/users/login', {
-                aadhaarNumber, // Use aadhaarNumber here
+                aadhaarNumber,
                 password
             });
 
-            // Use the response object
-            if (response.data && response.data.message) {
-                setMessage(response.data.message);
-                // Store token if present in response
-                // localStorage.setItem('token', response.data.token); // Uncomment if using token
+            // If login is successful
+            if (response.data && response.data.message === 'Login successful') {
+                setMessage('Login successful!');
+                setLoggedIn(true);  // Update the login status
+                setView('vote');    // Redirect to vote page after successful login
+                
+                // Optionally clear input fields
+                setAadhaarNumber('');
+                setPassword('');
+            } else {
+                setMessage(response.data.message || 'Login failed');
             }
         } catch (error) {
-            setMessage(error.response?.data.message || 'Login failed'); // Use optional chaining to avoid errors
+            setMessage(error.response?.data.message || 'Login failed');
         }
     };
 
@@ -32,8 +39,8 @@ const Login = () => {
                 <input
                     type="text"
                     placeholder="Aadhaar Number"
-                    value={aadhaarNumber} // Updated value here
-                    onChange={(e) => setAadhaarNumber(e.target.value)} // Updated setter function
+                    value={aadhaarNumber}
+                    onChange={(e) => setAadhaarNumber(e.target.value)}
                     required
                 />
                 <input
@@ -48,6 +55,12 @@ const Login = () => {
             {message && <p>{message}</p>}
         </div>
     );
+};
+
+// Add PropTypes validation to ensure that setLoggedIn and setView are required functions
+Login.propTypes = {
+    setLoggedIn: PropTypes.func.isRequired, // Validate that setLoggedIn is a function
+    setView: PropTypes.func.isRequired,     // Validate that setView is a function
 };
 
 export default Login;

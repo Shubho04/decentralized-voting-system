@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import Register from './components/Register';
 import Login from './components/Login';
+import VotePage from './components/VotePage'; // Import VotePage
 import { contractABI, contractAddress } from './abi';
 import './App.css'; // Custom CSS for styling
 
 const App = () => {
   const [account, setAccount] = useState('');
   const [contract, setContract] = useState(null);
-  const [view, setView] = useState('home'); // Use state to switch between views
+  const [view, setView] = useState('home'); // State to switch between views
+  const [loggedIn, setLoggedIn] = useState(false); // State for login status
 
   useEffect(() => {
     const loadWeb3 = async () => {
@@ -42,6 +44,12 @@ const App = () => {
     }
   };
 
+  // Logout function
+  const handleLogout = () => {
+    setLoggedIn(false);
+    setView('home'); // Redirect to home after logout
+  };
+
   return (
     <div className="container">
       <header className="header">
@@ -52,8 +60,18 @@ const App = () => {
       {/* Navigation Menu using state */}
       <nav className="nav">
         <button className="nav-button" onClick={() => setView('home')}>Home</button>
-        <button className="nav-button" onClick={() => setView('register')}>Register</button>
-        <button className="nav-button" onClick={() => setView('login')}>Login</button>
+        {!loggedIn && (
+          <>
+            <button className="nav-button" onClick={() => setView('register')}>Register</button>
+            <button className="nav-button" onClick={() => setView('login')}>Login</button>
+          </>
+        )}
+        {loggedIn && (
+          <>
+            <button className="nav-button" onClick={() => setView('vote')}>Vote</button>
+            <button className="nav-button" onClick={handleLogout}>Logout</button> {/* Logout button */}
+          </>
+        )}
       </nav>
 
       {/* Main Content */}
@@ -61,15 +79,16 @@ const App = () => {
         {view === 'home' && (
           <div className="home-page">
             <h2>Welcome to the Decentralized Voting System!</h2>
-            <p>Please log in or register to vote for your candidate.</p>
-            <div className="vote-buttons">
-              <button className="vote-button" onClick={() => castVote(1)}>Vote for Candidate 1</button>
-              <button className="vote-button" onClick={() => castVote(2)}>Vote for Candidate 2</button>
-            </div>
+            {loggedIn ? (
+              <p>You are logged in! You can now vote for your candidate.</p>
+            ) : (
+              <p>Please log in or register to vote for your candidate.</p>
+            )}
           </div>
         )}
         {view === 'register' && <Register />}
-        {view === 'login' && <Login />}
+        {view === 'login' && <Login setLoggedIn={setLoggedIn} setView={setView} />} {/* Pass down setLoggedIn */}
+        {loggedIn && view === 'vote' && <VotePage account={account} castVote={castVote} contract={contract} />} {/* Voting Page */}
       </main>
 
       <footer className="footer">
